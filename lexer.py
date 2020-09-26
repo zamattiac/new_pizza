@@ -1,7 +1,7 @@
 import re
 
-from new_pizza.tokens import *
-from new_pizza.errors import SyntaxError
+from tokens import *
+from errors import SyntaxError, UnkosherPizza
 
 
 class Lexer:
@@ -12,9 +12,11 @@ class Lexer:
         r"toppings": ToppingsToken,
         r"ooze": OozeToken,
         r"delivery": DeliveryToken,
+        r"digiornos": DigiornosToken,
         r"lemmegetta": LemmegettaToken,
         r"extra": ExtraToken,
         r"hold the": HoldTheToken,
+        r"you gotta": YouGottaToken,
         r";": EndStatementToken,
         r"[A-z0-9]+": LiteralToken,
         r"[\r\n]": NewlineToken,
@@ -42,10 +44,14 @@ class Lexer:
             col = token.start() - line_start
 
             token_class = eval(kind)
+            
+            if value in ["pepperoni", "ham", "olive"]:
+            	raise UnkosherPizza(f"This pizza is not kosher: {value} at {row}:{col}")
 
             if token_class == NewlineToken:
                 line_num += 1
                 line_start = token.end()
+                
 
             if not issubclass(token_class, UninterestingToken):
                 tokens.append(token_class(value, row, col))

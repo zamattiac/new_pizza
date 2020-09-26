@@ -1,5 +1,5 @@
-from new_pizza.ast import OneNode
-from new_pizza.errors import ParseError, SyntaxError
+from ast import OneNode
+from errors import ParseError, SyntaxError
 
 
 class Token:
@@ -14,12 +14,15 @@ class Token:
     def parse_tree(self, tokens_list, sym_table):
         raise NotImplementedError
 
-    def parse_children(self, tokens_list, sym_table, end_type=None):
+    def parse_children(self, tokens_list, sym_table, end_type=None, expect_next=None):
         next_token = tokens_list.lookahead()
 
         while not isinstance(next_token, end_type):
             if isinstance(next_token, EOFToken):
                 raise ParseError(f"EOF Reached for {self.__class__.__name__}")
+                
+            if expect_next and next_token.__class__ not in expect_next:
+            	raise SyntaxError(f"{self.__class__.__name__} expects one of: {expect_next}. {self.row}:{self.col}")
 
             child_tree = next_token.parse_tree(tokens_list, sym_table)
             if child_tree:
@@ -77,6 +80,11 @@ class OozeToken(Token):
             t.add_child(child)
 
         return t
+
+
+class DigiornosToken(Token):
+	def parse_tree(self, tokens_list, sym_table):
+		tokens_list.pop()
 
 
 class DeliveryToken(Token):
@@ -139,6 +147,17 @@ class ExtraToken(Token):
         t.add_child(array)
 
         return t
+        
+        
+class YouGottaToken(Token):
+	def parse_tree(self, tokens_list, sym_table):
+		token = tokens_list.pop()
+		
+		t = OneNode(token, "# IF\nif first:\nnsv\n# END IF")
+		for child in self.parse_children(tokens_list, sym_table, EndStatementToken):
+			t.add_child(child)
+		
+		return t
 
 
 class EndStatementToken(Token):

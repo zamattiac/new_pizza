@@ -1,5 +1,5 @@
-from new_pizza.lexer import Lexer
-from new_pizza.parser import parse
+from lexer import Lexer
+from parser import parse
 
 text = """
 toppings cheese 3

@@ -1,4 +1,4 @@
-from new_pizza.errors import SyntaxError
+from errors import SyntaxError
 
 
 class SymTable:

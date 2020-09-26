@@ -1,4 +1,5 @@
-
+class UnkosherPizza(Exception):
+	pass
 
 class ParseError(Exception):
     pass

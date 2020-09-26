@@ -1,6 +1,6 @@
-from new_pizza.ast import OneNode
-from new_pizza.tokens import EOFToken
-from new_pizza.symbol import SymTable
+from ast import OneNode
+from tokens import EOFToken
+from symbol import SymTable
 
 
 def parse(lexer):
